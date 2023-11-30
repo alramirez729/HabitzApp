@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.Scanner;
+
 public class Habit {
     String habitName;
     String description;
@@ -10,6 +13,11 @@ public class Habit {
     {
         this.habitName = habitName;
         this.description = description;
+    }
+
+
+    public void complete(){
+        completed = true;
     }
 
 
