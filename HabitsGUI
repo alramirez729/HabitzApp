@@ -19,22 +19,31 @@ public class HabitsGUI extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
+        // 'Add Habit' Button
         JButton addButton = new JButton("Add Habit");
         addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = JOptionPane.showInputDialog("Enter habit name:");
-                String description = JOptionPane.showInputDialog("Enter habit description:");
-                if (name != null && description != null && !name.isEmpty() && !description.isEmpty()) {
-                    habitsList.add(new Habit(name, description));
-                    addHabitToPanel(habitsList.getLast());
-                }
+        addButton.addActionListener(e -> {
+            String name = JOptionPane.showInputDialog("Enter habit name:");
+            String description = JOptionPane.showInputDialog("Enter habit description:");
+            if (name != null && description != null && !name.isEmpty() && !description.isEmpty()) {
+                habitsList.add(new Habit(name, description));
+                addHabitToPanel(habitsList.getLast());
             }
+        });
+
+        // 'Uncheck All' Checkbox
+         JButton uncheckAllButton = new JButton("Reset all Habitz");
+        uncheckAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        uncheckAllButton.addActionListener(e -> {
+            for (Habit habit : habitsList) {
+                habit.setCompleted(false);
+            }
+            refreshHabitsPanel(); // Refresh the panel to reflect changes
         });
 
         mainPanel.add(Box.createVerticalGlue());
         mainPanel.add(addButton);
+        mainPanel.add(uncheckAllButton);
         mainPanel.add(Box.createVerticalGlue());
 
         habitsPanel = new JPanel();
@@ -56,12 +65,7 @@ public class HabitsGUI extends JFrame {
         JLabel nameLabel = new JLabel(habit.getHabitName() + " - " + habit.getDescription());
         JCheckBox checkBox = new JCheckBox();
         checkBox.setSelected(habit.isCompleted());
-        checkBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                habit.setCompleted(checkBox.isSelected());
-            }
-        });
+        checkBox.addActionListener(e -> habit.setCompleted(checkBox.isSelected()));
 
         habitPanel.add(checkBox);
         habitPanel.add(nameLabel);
@@ -71,13 +75,21 @@ public class HabitsGUI extends JFrame {
         habitsPanel.repaint();
     }
 
+    private void refreshHabitsPanel() {
+        habitsPanel.removeAll();
+
+        for (Habit habit : habitsList) {
+            addHabitToPanel(habit);
+        }
+
+        habitsPanel.revalidate();
+        habitsPanel.repaint();
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                LinkedList<Habit> habits = new LinkedList<>();
-                new HabitsGUI(habits);
-            }
+        SwingUtilities.invokeLater(() -> {
+            LinkedList<Habit> habits = new LinkedList<>();
+            new HabitsGUI(habits);
         });
     }
 }
