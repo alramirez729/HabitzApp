@@ -67,6 +67,11 @@ public class HabitsGUI extends JFrame {
         repaint();
     }
 
+    public void updateHabitsList(LinkedList<Habit> updatedList) {
+        this.habitsList = updatedList;
+        refreshHabitsPanel();
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
