@@ -7,6 +7,7 @@ import java.util.LinkedList;
 public class HabitsGUI extends JFrame {
 
     private LinkedList<Habit> habitsList;
+    private JPanel habitsPanel; // Panel to hold habit entries
 
     public HabitsGUI(LinkedList<Habit> habits) {
         this.habitsList = habits;
@@ -27,7 +28,7 @@ public class HabitsGUI extends JFrame {
                 String description = JOptionPane.showInputDialog("Enter habit description:");
                 if (name != null && description != null && !name.isEmpty() && !description.isEmpty()) {
                     habitsList.add(new Habit(name, description));
-                    refreshHabitsPanel(mainPanel, habitsList);
+                    addHabitToPanel(habitsList.getLast());
                 }
             }
         });
@@ -36,37 +37,38 @@ public class HabitsGUI extends JFrame {
         mainPanel.add(addButton);
         mainPanel.add(Box.createVerticalGlue());
 
-        JScrollPane scrollPane = new JScrollPane(mainPanel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        habitsPanel = new JPanel();
+        habitsPanel.setLayout(new BoxLayout(habitsPanel, BoxLayout.Y_AXIS));
 
-        add(scrollPane);
+        JScrollPane scrollPane = new JScrollPane(habitsPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setPreferredSize(new Dimension(350, 250));
+
+        mainPanel.add(scrollPane);
+        add(mainPanel);
         setVisible(true);
     }
 
-    private void refreshHabitsPanel(JPanel panel, LinkedList<Habit> habitsList) {
-        panel.removeAll(); // Clear the panel before refreshing
+    private void addHabitToPanel(Habit habit) {
+        JPanel habitPanel = new JPanel();
+        habitPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        for (Habit habit : habitsList) {
-            JPanel habitPanel = new JPanel();
-            habitPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JLabel nameLabel = new JLabel(habit.getHabitName() + " - " + habit.getDescription());
+        JCheckBox checkBox = new JCheckBox();
+        checkBox.setSelected(habit.isCompleted());
+        checkBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                habit.setCompleted(checkBox.isSelected());
+            }
+        });
 
-            JLabel nameLabel = new JLabel(habit.getHabitName() + " - " + habit.getDescription());
-            JCheckBox checkBox = new JCheckBox();
-            checkBox.setSelected(habit.isCompleted());
-            checkBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    habit.setCompleted(checkBox.isSelected());
-                }
-            });
+        habitPanel.add(checkBox);
+        habitPanel.add(nameLabel);
+        habitsPanel.add(habitPanel);
 
-            habitPanel.add(checkBox);
-            habitPanel.add(nameLabel);
-            panel.add(habitPanel);
-        }
-
-        revalidate();
-        repaint();
+        habitsPanel.revalidate();
+        habitsPanel.repaint();
     }
 
     public static void main(String[] args) {
