@@ -1,36 +1,34 @@
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args)
-    {
-        int selection = -1;
-        Scanner input = new Scanner(System.in);
-
-        //creating list of habits
+    public static void main(String[] args) {
         LinkedList<Habit> habits = new LinkedList<>();
 
+        // Thread for running the GUI
+        Thread guiThread = new Thread(() -> {
+            HabitsGUI gui = new HabitsGUI(habits);
+            gui.setVisible(true);
+        });
+        guiThread.start();
 
-        while(selection != 0)
-        {
-            System.out.println("Please enter a menu option.\n 1. Create a habit \n 2. Print all the habits in the list \n 3. Complete a habit.\n0. Exit");
+        Scanner input = new Scanner(System.in);
+        int selection = -1;
+
+        while (selection != 0) {
+            System.out.println("Please enter a menu option.\n 1. Create a habit \n 2. Print all the habits in the list \n 3. Complete a habit.\n 0. Exit");
             selection = input.nextInt();
-            if(selection == 1)
-            {
+            input.nextLine(); // Consume newline character after reading int
+
+            if (selection == 1) {
                 createHabit(habits);
-            }
-            if(selection == 2){
+            } else if (selection == 2) {
                 printHabits(habits);
-            }
-            if(selection == 3){
+            } else if (selection == 3) {
                 completeHabit(habits);
             }
         }
-        //virtual cottage inspiration
-        //ideas: lofi beats application, habits to be checked off.
-
     }
 
     public static void createHabit(LinkedList<Habit> habits)
@@ -62,30 +60,28 @@ public class Main {
         }
     }
 
-    public static void completeHabit(LinkedList<Habit> habits)
-    {
+    public static void completeHabit(LinkedList<Habit> habits) {
+        Scanner input = new Scanner(System.in);
         int exit = 0;
-        while(exit != 1){
+
+        while (exit != 1) {
             System.out.println("Please enter the name or priority of your habit");
-            Scanner input = new Scanner(System.in);
-           // int numSearch = input.nextInt();
             String stringSearch = input.nextLine();
-            for(Habit e : habits)
-            {
-                if(e.habitName.equals(stringSearch)) //add a way to see whether the user is searching for the habit via name or via index " || habits.get(numSearch).equals(e) "
-                {
+            boolean found = false;
+
+            for (Habit e : habits) {
+                if (e.habitName.equals(stringSearch)) {
                     e.complete();
+                    found = true;
                     exit = 1;
-                    return;
-                }
-                else{
-                    System.out.println("Could not find the habit you were looking for please try again.");
+                    break; // Exit loop if habit is found and completed
                 }
             }
 
+            if (!found) {
+                System.out.println("Could not find the habit you were looking for. Please try again.");
+            }
         }
     }
-
-
 
 }
