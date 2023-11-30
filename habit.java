@@ -1,6 +1,3 @@
-import java.util.LinkedList;
-import java.util.Scanner;
-
 public class Habit {
     String habitName;
     String description;
@@ -15,11 +12,26 @@ public class Habit {
         this.description = description;
     }
 
+    public String getHabitName(){
+        return habitName;
+    }
+
+    public boolean isCompleted()
+    {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed)
+    {
+        this.completed = completed;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
 
     public void complete(){
         completed = true;
     }
-
-
-
 }
