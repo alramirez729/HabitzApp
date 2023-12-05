@@ -1,37 +1,44 @@
+import java.time.LocalTime;
+
 public class Habit {
-    String habitName;
-    String description;
-    boolean completed = false;
+    private String habitName;
+    private String description;
+    private boolean completed = false;
+    private LocalTime time;
 
-    //above are the qualities that the habit should have so far:
-    // {name of habit, description of habit, whether it's been done}
-
-    public Habit(String habitName, String  description)
-    {
+    public Habit(String habitName, String description, LocalTime time) {
         this.habitName = habitName;
         this.description = description;
+        this.time = time;
     }
 
-    public String getHabitName(){
+    public Habit(String habitName, String description){
+        this.habitName = habitName;
+        this.description = description;
+        this.time = null;
+    }
+
+    public String getHabitName() {
         return habitName;
     }
 
-    public boolean isCompleted()
-    {
+    public boolean isCompleted() {
         return completed;
     }
 
-    public void setCompleted(boolean completed)
-    {
+    public void setCompleted(boolean completed) {
         this.completed = completed;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return description;
     }
 
+    public LocalTime getTime() {
+        return time;
+    }
 
-    public void complete(){
-        completed = true;
+    public void setTime(LocalTime time) {
+        this.time = time;
     }
 }
