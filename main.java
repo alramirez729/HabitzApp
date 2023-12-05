@@ -1,3 +1,4 @@
+import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -31,30 +32,43 @@ public class Main {
         }
     }
 
-    public static void createHabit(LinkedList<Habit> habits)
-    {
+    public static void createHabit(LinkedList<Habit> habits) {
         Scanner input = new Scanner(System.in);
         String name;
         String description;
-        System.out.println("Please enter the name of the habit you'd like to create.");
+        String answer;
+        LocalTime time;
+
+        System.out.println("Please enter the name of the habit you'd like to create:");
         name = input.nextLine();
-        System.out.println("Please enter a brief description of your habit.");
+
+        System.out.println("Please enter a brief description of your habit:");
         description = input.nextLine();
 
+        System.out.println("Would you like to add a timeframe for this habit? ");
+        answer = input.nextLine();
+        if(answer.equals("y") || answer.equals("yes")){
 
-        //creates the habit given the user inputs, and then adds it to the linked list provided.
-        Habit currHabit = new Habit(name, description);
-        habits.add(currHabit);
+            System.out.println("Please enter the time for the habit (in HH:MM format):");
+            String timeString = input.nextLine();
+            time = LocalTime.parse(timeString);
+            Habit currHabit = new Habit(name, description, time);
+        }
+        else{
+            // Creates the habit given the user inputs and adds it to the linked list provided
+            Habit currHabit = new Habit(name, description);
+            habits.add(currHabit);
+        }
+
+
     }
 
-    public static void printHabits(LinkedList<Habit> habits)
-    {
-        for(Habit e : habits){
-            System.out.print("\n" + (habits.indexOf(e)+ 1) + ". "+ e.habitName + "; Completion status: ");
-            if(e.completed){
+    public static void printHabits(LinkedList<Habit> habits) {
+        for (Habit e : habits) {
+            System.out.print("\n" + (habits.indexOf(e) + 1) + ". " + e.getHabitName() + "; Completion status: ");
+            if (e.isCompleted()) {
                 System.out.print("Completed.\n");
-            }
-            else{
+            } else {
                 System.out.print("Not completed.\n");
             }
         }
@@ -65,13 +79,13 @@ public class Main {
         int exit = 0;
 
         while (exit != 1) {
-            System.out.println("Please enter the name or priority of your habit");
+            System.out.println("Please enter the name or priority of your habit:");
             String stringSearch = input.nextLine();
             boolean found = false;
 
             for (Habit e : habits) {
-                if (e.habitName.equals(stringSearch)) {
-                    e.complete();
+                if (e.getHabitName().equals(stringSearch)) {
+                    e.setCompleted(true);
                     found = true;
                     exit = 1;
                     break; // Exit loop if habit is found and completed
@@ -83,5 +97,4 @@ public class Main {
             }
         }
     }
-
 }
