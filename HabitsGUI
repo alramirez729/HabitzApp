@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalTime;
 import java.util.LinkedList;
 
@@ -12,6 +10,7 @@ public class HabitsGUI extends JFrame {
 
     public HabitsGUI(LinkedList<Habit> habits) {
         this.habitsList = habits;
+        //window details, size, name, etc...
         setTitle("Habits App");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600, 750);
@@ -20,43 +19,17 @@ public class HabitsGUI extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        // 'Add Habit' Button
         JButton addButton = new JButton("Add Habit");
         addButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        addButton.addActionListener(e -> {
-            String name = JOptionPane.showInputDialog("Enter habit name:");
-            String description = JOptionPane.showInputDialog("Enter habit description:");
+        addButton.addActionListener(e -> addEmptyHabitEntry());
 
-            if (name != null && description != null && !name.isEmpty() && !description.isEmpty()) {
-                int option = JOptionPane.showOptionDialog(
-                        null,
-                        "Would you like to specify a time for the habit?",
-                        "Time Selection",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new String[]{"Yes", "No"},
-                        null);
-
-                LocalTime selectedTime = null;
-                if (option == JOptionPane.YES_OPTION) {
-                    selectedTime = selectTime();
-                }
-
-                habitsList.add(new Habit(name, description, selectedTime));
-                addHabitToPanel(habitsList.getLast());
-            }
-        });
-
-
-        // 'Uncheck All' Checkbox
-        JButton uncheckAllButton = new JButton("Reset all Habitz");
+        JButton uncheckAllButton = new JButton("Reset all Habits");
         uncheckAllButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         uncheckAllButton.addActionListener(e -> {
             for (Habit habit : habitsList) {
                 habit.setCompleted(false);
             }
-            refreshHabitsPanel(); // Refresh the panel to reflect changes
+            refreshHabitsPanel();
         });
 
         mainPanel.add(Box.createVerticalGlue());
@@ -69,31 +42,82 @@ public class HabitsGUI extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(habitsPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setPreferredSize(new Dimension(500, 600));
+        scrollPane.setPreferredSize(new Dimension(300, 600));
 
         mainPanel.add(scrollPane);
         add(mainPanel);
         setVisible(true);
     }
 
+    private void addEmptyHabitEntry() {
+        JPanel habitEntry = new JPanel();
+        habitEntry.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        habitEntry.setPreferredSize(new Dimension(300, 80));
+
+        JTextField habitNameField = new JTextField(15);
+        JTextArea descriptionArea = new JTextArea(3, 15);
+        //allows for the description to wrap if it reaches the end of the box
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        //
+        JButton saveButton = new JButton("Save Habit");
+
+        JComboBox<String> timeComboBox = new JComboBox<>(getTimeList());
+
+        saveButton.addActionListener(e -> {
+            String name = habitNameField.getText();
+            String description = descriptionArea.getText();
+            if (!name.isEmpty() && !description.isEmpty()) {
+                LocalTime selectedTime = null;
+                if (timeComboBox.getSelectedIndex() != 0) {
+                    selectedTime = LocalTime.parse((String) timeComboBox.getSelectedItem());
+                }
+                habitsList.add(new Habit(name, description, selectedTime));
+                refreshHabitsPanel();
+            } else {
+                JOptionPane.showMessageDialog(this, "Please enter a habit name and description.");
+            }
+        });
+
+        habitEntry.add(new JLabel("Habit Name:"));
+        habitEntry.add(habitNameField);
+        habitEntry.add(new JLabel("Description:"));
+        habitEntry.add(new JScrollPane(descriptionArea));
+        habitEntry.add(new JLabel("Select Time:"));
+        habitEntry.add(timeComboBox);
+        habitEntry.add(saveButton);
+
+        habitsPanel.add(habitEntry);
+
+        habitsPanel.revalidate();
+        habitsPanel.repaint();
+    }
+
+    private void refreshHabitsPanel() {
+        habitsPanel.removeAll();
+        for (Habit habit : habitsList) {
+            addHabitToPanel(habit);
+        }
+        habitsPanel.revalidate();
+        habitsPanel.repaint();
+    }
+
     private void addHabitToPanel(Habit habit) {
         JPanel habitPanel = new JPanel();
         habitPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         JLabel nameLabel;
-        if(habit.getTime() == null){
+        if (habit.getTime() == null) {
             nameLabel = new JLabel("<html><b><u><i>" +
                     habit.getHabitName() + "</u></b></i>" +
                     ".<br> Description: " + habit.getDescription() +
                     "</html>");
-        }
-        else{
+        } else {
             nameLabel = new JLabel("<html><b><u><i>" +
                     habit.getHabitName() + "</u></b></i>" +
                     ".<br> Description: " + habit.getDescription() +
                     "<br> Time: " + habit.getTime() +
                     "</html>");
         }
-
 
         JCheckBox checkBox = new JCheckBox();
         checkBox.setSelected(habit.isCompleted());
@@ -107,33 +131,10 @@ public class HabitsGUI extends JFrame {
         habitsPanel.repaint();
     }
 
-    private void refreshHabitsPanel() {
-        habitsPanel.removeAll();
-
-        for (Habit habit : habitsList) {
-            addHabitToPanel(habit);
-        }
-
-        habitsPanel.revalidate();
-        habitsPanel.repaint();
-    }
-
-    private LocalTime selectTime() {
-        SpinnerModel spinnerModel = new SpinnerListModel(getTimeList());
-        JSpinner timeSpinner = new JSpinner(spinnerModel);
-        timeSpinner.setEditor(new JSpinner.DefaultEditor(timeSpinner));
-
-        int option = JOptionPane.showOptionDialog(null, timeSpinner, "Select Time", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-        if (option == JOptionPane.OK_OPTION) {
-            String selectedTimeStr = (String) timeSpinner.getValue();
-            return LocalTime.parse(selectedTimeStr);
-        }
-        return null;
-    }
-
     private String[] getTimeList() {
-        String[] timeList = new String[24 * 60];
-        int index = 0;
+        String[] timeList = new String[24 * 60 + 1];
+        timeList[0] = "Select Time";
+        int index = 1;
         for (int hour = 0; hour < 24; hour++) {
             for (int minute = 0; minute < 60; minute++) {
                 timeList[index++] = String.format("%02d:%02d", hour, minute);
