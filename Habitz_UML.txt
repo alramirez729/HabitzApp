@@ -1,0 +1,39 @@
+
+• Class Name: Main
+• Attributes: None
+• Methods:
+  o +main(args: String[]): void
+  o +createHabit(habits: LinkedList<Habit>): void
+  o +printHabits(habits: LinkedList<Habit>): void
+  o +completeHabit(habits: LinkedList<Habit>): void
+  o +editHabit(habits: LinkedList<Habit>): void
+
+• Class Name: Habit
+• Attributes:
+  o -habitName: String
+  o -description: String
+  o -completed: boolean = false
+  o -time: LocalTime
+• Methods:
+  o +Habit(habitName: String, description: String, time: LocalTime)
+  o +Habit(habitName: String, description: String)
+  o +getHabitName(): String
+  o +getDescription(): String
+  o +isCompleted(): boolean
+  o +setCompleted(completed: boolean): void
+  o +setHabitName(habitName: String): void
+  o +setDescription(description: String): void
+  o +getTime(): LocalTime
+  o +setTime(time: LocalTime): void
+
+• Class Name: HabitsGUI (extends JFrame)
+• Attributes:
+  o -habitsList: LinkedList<Habit>
+  o -habitsPanel: JPanel
+• Methods:
+  o +HabitsGUI(habits: LinkedList<Habit>)
+  o -addEmptyHabitEntry(): void
+  o -refreshHabitsPanel(): void
+  o -addHabitToPanel(habit: Habit): void
+  o -editHabit(habit: Habit): void
+  o -getTimeList(): String[]
