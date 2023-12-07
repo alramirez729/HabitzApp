@@ -88,6 +88,7 @@ public class HabitsGUI extends JFrame {
         habitEntry.add(timeComboBox);
         habitEntry.add(saveButton);
 
+
         habitsPanel.add(habitEntry);
 
         habitsPanel.revalidate();
@@ -147,12 +148,9 @@ public class HabitsGUI extends JFrame {
     }
 
     private void editHabit(Habit habit) {
-        JDialog editDialog = new JDialog(this, "Edit Habit", true);
-        editDialog.setLayout(new FlowLayout());
-        editDialog.setSize(300, 200);
-
         JTextField editNameField = new JTextField(habit.getHabitName(), 15);
         JTextArea editDescriptionArea = new JTextArea(habit.getDescription(), 3, 15);
+        JDialog editDialog = new JDialog(this, "Edit Habit", true);
         editDescriptionArea.setLineWrap(true);
         editDescriptionArea.setWrapStyleWord(true);
 
@@ -160,7 +158,7 @@ public class HabitsGUI extends JFrame {
         if (habit.getTime() != null) {
             editTimeComboBox.setSelectedItem(habit.getTime().toString());
         }
-
+//edit button
         JButton saveEditButton = new JButton("Save Changes");
         saveEditButton.addActionListener(e -> {
             habit.setHabitName(editNameField.getText());
@@ -171,17 +169,36 @@ public class HabitsGUI extends JFrame {
             refreshHabitsPanel();
             editDialog.dispose();
         });
+//delete button
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(e -> {
+            habitsList.remove(habit);
+            refreshHabitsPanel();
+            editDialog.dispose();
+        });
 
-        editDialog.add(new JLabel("Habit Name:"));
-        editDialog.add(editNameField);
-        editDialog.add(new JLabel("Description:"));
-        editDialog.add(new JScrollPane(editDescriptionArea));
-        editDialog.add(new JLabel("Select Time:"));
-        editDialog.add(editTimeComboBox);
-        editDialog.add(saveEditButton);
+        JPanel editPanel = new JPanel();
+        editPanel.setLayout(new GridLayout(0, 2));
+        editPanel.add(new JLabel("Habit Name:"));
+        editPanel.add(editNameField);
+        editPanel.add(new JLabel("Description:"));
+        editPanel.add(new JScrollPane(editDescriptionArea));
+        editPanel.add(new JLabel("Select Time:"));
+        editPanel.add(editTimeComboBox);
+        editPanel.add(saveEditButton);
+        editPanel.add(deleteButton);
+
+
+        editDialog.add(editPanel);
+        editDialog.pack();
+
+        // Get the location of the HabitsGUI window and position the editDialog near it
+        Point guiLocation = this.getLocationOnScreen();
+        editDialog.setLocation(guiLocation.x + 50, guiLocation.y + 50); // Adjust offset as needed
 
         editDialog.setVisible(true);
     }
+
 
     private String[] getTimeList() {
         String[] timeList = new String[24 * 60 + 1];
