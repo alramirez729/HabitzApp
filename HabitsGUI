@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalTime;
@@ -107,16 +108,16 @@ public class HabitsGUI extends JFrame {
         habitPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         JLabel nameLabel;
         if (habit.getTime() == null) {
-            nameLabel = new JLabel("<html><b><u><i>" +
-                    habit.getHabitName() + "</u></b></i>" +
-                    ".<br> Description: " + habit.getDescription() +
-                    "</html>");
+            nameLabel = new JLabel("<html><b><u><i>"
+                    + habit.getHabitName() + "</u></b></i>"
+                    + ".<br> Description: " + habit.getDescription()
+                    + "</html>");
         } else {
-            nameLabel = new JLabel("<html><b><u><i>" +
-                    habit.getHabitName() + "</u></b></i>" +
-                    ".<br> Description: " + habit.getDescription() +
-                    "<br> Time: " + habit.getTime() +
-                    "</html>");
+            nameLabel = new JLabel("<html><b><u><i>"
+                    + habit.getHabitName() + "</u></b></i>"
+                    + ".<br> Description: " + habit.getDescription()
+                    + "<br> Time: " + habit.getTime()
+                    + "</html>");
         }
 
         JCheckBox checkBox = new JCheckBox();
@@ -129,6 +130,57 @@ public class HabitsGUI extends JFrame {
 
         habitsPanel.revalidate();
         habitsPanel.repaint();
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton editButton = new JButton("Edit");
+        editButton.addActionListener(e -> editHabit(habit));
+        buttonPanel.add(editButton);
+
+        habitPanel.add(checkBox);
+        habitPanel.add(nameLabel);
+        habitPanel.add(buttonPanel); // Add the button panel to the main habit panel
+
+        habitsPanel.add(habitPanel);
+
+        habitsPanel.revalidate();
+        habitsPanel.repaint();
+    }
+
+    private void editHabit(Habit habit) {
+        JDialog editDialog = new JDialog(this, "Edit Habit", true);
+        editDialog.setLayout(new FlowLayout());
+        editDialog.setSize(300, 200);
+
+        JTextField editNameField = new JTextField(habit.getHabitName(), 15);
+        JTextArea editDescriptionArea = new JTextArea(habit.getDescription(), 3, 15);
+        editDescriptionArea.setLineWrap(true);
+        editDescriptionArea.setWrapStyleWord(true);
+
+        JComboBox<String> editTimeComboBox = new JComboBox<>(getTimeList());
+        if (habit.getTime() != null) {
+            editTimeComboBox.setSelectedItem(habit.getTime().toString());
+        }
+
+        JButton saveEditButton = new JButton("Save Changes");
+        saveEditButton.addActionListener(e -> {
+            habit.setHabitName(editNameField.getText());
+            habit.setDescription(editDescriptionArea.getText());
+            if (editTimeComboBox.getSelectedIndex() != 0) {
+                habit.setTime(LocalTime.parse((String) editTimeComboBox.getSelectedItem()));
+            }
+            refreshHabitsPanel();
+            editDialog.dispose();
+        });
+
+        editDialog.add(new JLabel("Habit Name:"));
+        editDialog.add(editNameField);
+        editDialog.add(new JLabel("Description:"));
+        editDialog.add(new JScrollPane(editDescriptionArea));
+        editDialog.add(new JLabel("Select Time:"));
+        editDialog.add(editTimeComboBox);
+        editDialog.add(saveEditButton);
+
+        editDialog.setVisible(true);
     }
 
     private String[] getTimeList() {
