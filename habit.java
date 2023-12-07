@@ -29,9 +29,17 @@ public class Habit {
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
+    
+    public void setDescription(String description){
+        this.description = description;
+    }
 
     public String getDescription() {
         return description;
+    }
+    
+    public void  setHabitName(String habitName){
+        this.habitName = habitName;
     }
 
     public LocalTime getTime() {
