@@ -18,7 +18,7 @@ public class Main {
         int selection = -1;
 
         while (selection != 0) {
-            System.out.println("Please enter a menu option.\n 1. Create a habit \n 2. Print all the habits in the list \n 3. Complete a habit.\n 0. Exit");
+            System.out.println("Please enter a menu option.\n 1. Create a habit \n 2. Print all the habits in the list \n 3. Edit Habit \n 4. Complete a habit \n 0. Exit");
             selection = input.nextInt();
             input.nextLine(); // Consume newline character after reading int
 
@@ -27,6 +27,8 @@ public class Main {
             } else if (selection == 2) {
                 printHabits(habits);
             } else if (selection == 3) {
+                editHabit(habits);
+            } else if (selection == 4){
                 completeHabit(habits);
             }
         }
@@ -73,6 +75,46 @@ public class Main {
             }
         }
     }
+    
+    public static void editHabit(LinkedList<Habit> habits) {
+    Scanner input = new Scanner(System.in);
+    System.out.println("Please enter the name of the habit you want to edit:");
+    String habitName = input.nextLine();
+    Habit foundHabit = null;
+
+    for (Habit habit : habits) {
+        if (habit.getHabitName().equals(habitName)) {
+            foundHabit = habit;
+            break;
+        }
+    }
+
+    if (foundHabit == null) {
+        System.out.println("Habit not found. Please try again.");
+        return;
+    }
+
+    System.out.println("Editing habit: " + foundHabit.getHabitName());
+
+    System.out.println("Enter the new name for the habit (or press enter to keep the same):");
+    String newName = input.nextLine();
+    if (!newName.isEmpty()) {
+        foundHabit.setHabitName(newName);
+    }
+
+    System.out.println("Enter a new description for the habit (or press enter to keep the same):");
+    String newDescription = input.nextLine();
+    if (!newDescription.isEmpty()) {
+        foundHabit.setDescription(newDescription);
+    }
+
+    System.out.println("Enter a new time for the habit in HH:MM format (or press enter to keep the same):");
+    String newTime = input.nextLine();
+    if (!newTime.isEmpty()) {
+        foundHabit.setTime(LocalTime.parse(newTime));
+    }
+}
+
 
     public static void completeHabit(LinkedList<Habit> habits) {
         Scanner input = new Scanner(System.in);
